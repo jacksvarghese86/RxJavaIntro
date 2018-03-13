@@ -78,7 +78,8 @@ public class MainActivity extends AppCompatActivity
             setTitle("Introduction to Rx");
             fragment = IntroFragment.newInstance();
         } else if (id == R.id.nav_gallery) {
-
+            setTitle("Form Validation");
+            fragment = LoginFragment.newInstance();
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
