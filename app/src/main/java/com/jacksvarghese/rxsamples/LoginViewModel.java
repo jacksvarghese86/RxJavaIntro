@@ -1,11 +1,10 @@
 package com.jacksvarghese.rxsamples;
 
 import android.databinding.ObservableField;
+import android.util.Log;
 
 import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Function3;
 
 /**
@@ -14,20 +13,20 @@ import io.reactivex.functions.Function3;
 
 public class LoginViewModel {
 
+    private static final String TAG = "LoginViewModel";
+
     public ObservableField<String> userName  = new ObservableField<>();
     public ObservableField<String> password  = new ObservableField<>();
     public ObservableField<String> email  = new ObservableField<>();
     public ObservableField<String> userNameErr  = new ObservableField<>();
     public ObservableField<String> passwordErr  = new ObservableField<>();
     public ObservableField<String> emailErr  = new ObservableField<>();
-    public ObservableField<Boolean> enableLogin  = new ObservableField<>();
-
-    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+    public ObservableField<Boolean> enableLogin;
+    public Action signIn;
 
     public LoginViewModel() {
-        enableLogin.set(false);
 
-        Observable.combineLatest(FieldUtils.toObservable(userName), FieldUtils.toObservable(password),
+        Observable result = Observable.combineLatest(FieldUtils.toObservable(userName), FieldUtils.toObservable(password),
                 FieldUtils.toObservable(email), new Function3<String, String, String, Boolean>() {
                     @Override
                     public Boolean apply(String userName, String password, String email) throws Exception {
@@ -53,31 +52,18 @@ public class LoginViewModel {
                             emailErr.set("");
                         }
                         return failCount==0;
-                    }})
-                .subscribe(new Observer<Boolean>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        mCompositeDisposable.add(d);
-                    }
+                    }});
 
-                    @Override
-                    public void onNext(Boolean aBoolean) {
-                        enableLogin.set(aBoolean);
-                    }
+        enableLogin = FieldUtils.toField(result);
 
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+        signIn = new Action() {
+            @Override
+            public void run() throws Exception {
+                Log.d(TAG, "signIn button clicked");
+            }
+        };
     }
 
     public void destroy() {
-        mCompositeDisposable.dispose();
     }
 }

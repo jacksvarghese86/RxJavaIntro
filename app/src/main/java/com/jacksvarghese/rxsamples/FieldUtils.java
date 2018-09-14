@@ -48,4 +48,15 @@ public class FieldUtils {
             }
         });
     }
+
+    /**
+     * A convenient utility to bind an observable to an ObservableField. This observable filed then take
+     * care of subscribing and unsubscribing from the provided observable.
+     * @param observable Observable that need to be bound to
+     * @param <T> Type of observable
+     * @return returns Observable field.
+     */
+    public static <T> ReadOnlyField<T> toField(@NonNull final Observable<T> observable) {
+        return ReadOnlyField.create(observable);
+    }
 }
